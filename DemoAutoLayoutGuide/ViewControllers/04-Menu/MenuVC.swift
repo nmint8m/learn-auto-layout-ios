@@ -62,11 +62,11 @@ extension MenuVC: UITableViewDataSource, UITableViewDelegate {
         case .detail:
             let vc = DetailVC()
             present(vc, animated: true, completion: nil)
-        case .ultimateDetail:
-            let vc = UltimateDetailVC()
+        case .detailLevel99:
+            let vc = DetailLevel99VC()
             present(vc, animated: true, completion: nil)
-        case .ultimateX2Detail:
-            let vc = UltimateX2DetailVC()
+        case .detailUltimate:
+            let vc = DetailUltimateVC()
             present(vc, animated: true, completion: nil)
         case .hello:
             let vc = HelloVC()
@@ -79,16 +79,16 @@ extension MenuVC {
     enum Section: Int, CaseIterable {
         case signIn
         case detail
-        case ultimateDetail
-        case ultimateX2Detail
+        case detailLevel99
         case hello
+        case detailUltimate
 
         var title: String {
             switch self {
             case .signIn: return "Sign In"
             case .detail: return "Detail"
-            case .ultimateDetail: return "Ultimate Detail"
-            case .ultimateX2Detail: return "Ultimate x2 Detail"
+            case .detailLevel99: return "Detail Level 99"
+            case .detailUltimate: return "Detail Ultimate"
             case .hello: return "Hello"
             }
         }
@@ -97,8 +97,8 @@ extension MenuVC {
             switch self {
             case .signIn: return "Required constraint Optional constraint  and . "
             case .detail: return "This example describe the requirements that we need to do."
-            case .ultimateDetail: return "Auto layout with compression resistance priority."
-            case .ultimateX2Detail: return "Auto layout with UIStackView and content hugging priority."
+            case .detailLevel99: return "Auto layout with compression resistance priority."
+            case .detailUltimate: return "Auto layout with UIStackView and content hugging priority."
             case .hello: return "Auto layout with UIStackView greatly simplifies the constraint logic needed for the rest of the layout."
             }
         }
@@ -108,4 +108,3 @@ extension MenuVC {
         }
     }
 }
-
