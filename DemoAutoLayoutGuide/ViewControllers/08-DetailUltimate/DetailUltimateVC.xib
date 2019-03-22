@@ -122,7 +122,7 @@
                                 <constraint firstAttribute="height" constant="50" id="akp-RM-Evs"/>
                                 <constraint firstItem="lC0-mh-pIc" firstAttribute="top" secondItem="2wP-E9-9Gg" secondAttribute="bottom" id="dxJ-Xo-5zM"/>
                                 <constraint firstAttribute="bottom" secondItem="lC0-mh-pIc" secondAttribute="bottom" id="iO0-H1-xts"/>
-                                <constraint firstAttribute="trailing" secondItem="lC0-mh-pIc" secondAttribute="trailing" constant="10" id="two-tF-Wz8"/>
+                                <constraint firstAttribute="trailing" secondItem="lC0-mh-pIc" secondAttribute="trailing" constant="10" id="vz2-35-xKH"/>
                             </constraints>
                         </view>
                     </subviews>
