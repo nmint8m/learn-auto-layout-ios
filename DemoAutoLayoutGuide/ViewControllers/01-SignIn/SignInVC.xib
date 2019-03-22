@@ -12,12 +12,12 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SignInVC" customModule="DemoAutoLayoutGuide" customModuleProvider="target">
             <connections>
-                <outlet property="bigTitleContainterViewTopConstraint" destination="5CV-xe-QUa" id="wrx-uM-kzG"/>
+                <outlet property="centerContainterViewTopConstraint" destination="5CV-xe-QUa" id="wrx-uM-kzG"/>
                 <outlet property="contentContainerView" destination="YZl-tt-Mzc" id="moS-eM-gLn"/>
                 <outlet property="signInButton" destination="J4M-Ij-dNg" id="H7D-8c-0o6"/>
-                <outlet property="smallTitleContainerViewTopConstraint" destination="ELr-yp-0KG" id="IuX-NT-4hh"/>
                 <outlet property="titleContainerView" destination="6Ac-2R-Iyb" id="j6h-zT-xZ7"/>
                 <outlet property="titleContainerViewHeight" destination="eN0-Fv-MEZ" id="yjR-pn-GqX"/>
+                <outlet property="topTitleContainerViewTopConstraint" destination="ELr-yp-0KG" id="ARx-o3-P5s"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -115,7 +115,7 @@
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="img5" translatesAutoresizingMaskIntoConstraints="NO" id="h0a-gh-c5b">
                             <rect key="frame" x="15" y="15" width="70" height="70"/>
                             <constraints>
-                                <constraint firstAttribute="height" priority="750" constant="50" id="MjP-fX-4ch"/>
+                                <constraint firstAttribute="height" priority="950" constant="50" id="MjP-fX-4ch"/>
                                 <constraint firstAttribute="width" secondItem="h0a-gh-c5b" secondAttribute="height" multiplier="1:1" id="Sbi-Eu-czx"/>
                             </constraints>
                         </imageView>
@@ -151,7 +151,7 @@
             <color key="backgroundColor" red="1" green="0.88613335562556916" blue="0.85586558410660929" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="6Ac-2R-Iyb" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" priority="800" constant="287" id="5CV-xe-QUa"/>
-                <constraint firstItem="6Ac-2R-Iyb" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" priority="900" constant="120" id="ELr-yp-0KG"/>
+                <constraint firstItem="6Ac-2R-Iyb" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" priority="850" constant="120" id="ELr-yp-0KG"/>
                 <constraint firstItem="6Ac-2R-Iyb" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="Jme-nm-qwe"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="YZl-tt-Mzc" secondAttribute="trailing" constant="30" id="LOb-oO-2Nl"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="6Ac-2R-Iyb" secondAttribute="trailing" constant="20" id="YUj-UU-Ata"/>

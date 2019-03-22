@@ -14,8 +14,8 @@ final class SignInVC: UIViewController {
     @IBOutlet private weak var contentContainerView: UIView!
     @IBOutlet private weak var signInButton: UIButton!
     @IBOutlet private weak var titleContainerViewHeight: NSLayoutConstraint!
-    @IBOutlet private weak var bigTitleContainterViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var smallTitleContainerViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var centerContainterViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var topTitleContainerViewTopConstraint: NSLayoutConstraint!
 
     private var isCollapsed = false
 
@@ -28,11 +28,11 @@ final class SignInVC: UIViewController {
     private func configTitleContainerView() {
         configRoundView(titleContainerView)
 
-        bigTitleContainterViewTopConstraint.constant = (Config.screenSize.height - Config.bigContainerViewHeight) / 2
-        bigTitleContainterViewTopConstraint.priority = Config.highPriority
+        centerContainterViewTopConstraint.constant = (Config.screenSize.height - Config.bigContainerViewHeight) / 2
+        centerContainterViewTopConstraint.priority = Config.highPriority
 
-        smallTitleContainerViewTopConstraint.constant = (Config.screenSize.height - contentContainerView.frame.height) / 2 - Config.smallContainerViewHeight + 10
-        smallTitleContainerViewTopConstraint.priority = Config.lowPriority
+        topTitleContainerViewTopConstraint.constant = (Config.screenSize.height - contentContainerView.frame.height) / 2 - Config.smallContainerViewHeight + 10
+        topTitleContainerViewTopConstraint.priority = Config.mediumPriority
     }
 
     private func configContentContainerView() {
@@ -49,9 +49,7 @@ final class SignInVC: UIViewController {
     private func updateTilteContainerView(_ isCollapsed: Bool, animated: Bool, completion: (() -> Void)? = nil) {
         titleContainerViewHeight.constant = isCollapsed ? Config.smallContainerViewHeight : Config.bigContainerViewHeight
 
-        bigTitleContainterViewTopConstraint.priority = isCollapsed ? Config.lowPriority : Config.highPriority
-
-        smallTitleContainerViewTopConstraint.priority = isCollapsed ? Config.highPriority : Config.lowPriority
+        centerContainterViewTopConstraint.priority = isCollapsed ? Config.lowPriority : Config.highPriority
 
         UIView.animate(withDuration: animated ? 0.2 : 0, animations: { [weak self] in
             guard let this = self else { return }
@@ -91,6 +89,7 @@ extension SignInVC {
         static let smallContainerViewHeight: CGFloat = 50
         static let bigContainerViewHeight: CGFloat = 100
         static let highPriority = UILayoutPriority(rawValue: 900)
+        static let mediumPriority = UILayoutPriority(rawValue: 850)
         static let lowPriority = UILayoutPriority(rawValue: 800)
         static let screenSize = UIScreen.main.bounds.size
     }
