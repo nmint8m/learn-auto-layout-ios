@@ -1,8 +1,15 @@
 # Auto Layout Guide
 
-_Written byL **Nguyen Minh Tam**_
+_Written by **Nguyen Minh Tam**_
 
-Trong tài liệu này có đề cập đến một số kiến thức cơ bản của auto layout và một số ứng dụng của trong thực tế thường gặp khi develop một iOS application. Recommend cho các bạn đã làm quen với auto layout trước đó. Let's check it out! 💥
+Trong tài liệu này có đề cập đến một số kiến thức cơ bản của auto layout và một số ứng dụng của trong thực tế thường gặp khi develop một iOS application. Tài liệu này được recommend cho các bạn đã làm quen với auto layout trước đó nhe. Trong thời gian tới, mình sẽ viết tài liệu auto layout in iOS for begginer. Nhưng bây giờ hãy xem thử auto layout sẽ làm được gì trước nhé. Let's check it out! 💥
+
+<center>
+	<img src="./Image/img-app-menu.png" height="200">
+	<img src="./Image/img-app-hello.png" height="200">
+	<img src="./Image/img-app-signin.gif" height="200">
+	<img src="./Image/img-app-detail.gif" height="200">
+</center>
 
 **Menu**
 
