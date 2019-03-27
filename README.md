@@ -357,3 +357,71 @@ Mặt khác, fitting size lại là output từ auto layout. Nó là size đư�
 
 Stack view là một ví dụ điển hình. Hệ thống tính toán size của stack view dựa trên nội dung và các attribute được set trong stack view. Stack view hoạt động như nó có intrinsic content size, nhưng thật ra không phải vậy, stack view có fitting size. Chúng ta sẽ tìm hiểu cụ thể trong phần sau.
 
+## Auto Layout With Stack View
+
+*Written by: __Nguyễn Minh Tâm__*
+
+Stack view cung cấp cho chúng ta một công cụ mạnh mẽ của auto layout mà không cần sử dụng đến nhiều constraint phức tạp. Một stack view có thể define một row hoặc column của các UI element. Stack view sắp xếp nhưng element bằng các property sau:
+
+- **axis** (UIStackView only) / **orientation** (NSStackView only): xác định hướng của stack view theo vertical hay horizontal.
+- **distribution**: xác định cách xếp đặt của các view nằm trên trục của stack view.
+- **alignment**: xác định cách xếp đặt của các view nằm thẳng đứng so với trục của stack view.
+- **spacing**: xác định khoảng cách giữa các view nằm cạnh nhau.
+
+Sử dụng stack view trên Interface Builder bằng cách kéo thả vertical hoặc horizontal stack view vào. Sau đó kéo các content thả vào trong stack view.
+
+Nếu một object có ISC, nó sẽ xuất hiện trong stack view với size đó. Nếu object không có intrinsic content size, Interface Builder sẽ set default size. Chúng ta có thể resize object và Interface sẽ add thêm constraint để duy trì size của nó.
+
+Ví dụ: Mở `DemoAutoLayoutGuide.xcodeproj` và tới file `HelloVC.xib`. Về cơ bản thì chỉ cần kéo thả các control vào stack view. Tuy nhiên ở đây mình đã set thêm kích thước cho một số control.
+
+<center>
+	<img src="./Image/img-app-hello.png" height="400">
+</center>
+
+Như đã đề cập ở phía trên, stack view là một ví dụ điển hình cho fitting size. Hệ thống tính toán size của stack view dựa trên nội dung và các attribute được set trong stack view. Stack view hoạt động như nó có intrinsic content size, nhưng thật ra không phải vậy:
+
+- Chúng ta có thể tạo ra layout chỉ sử dụng constraint để định nghĩa position. (chúng ta hay nhầm tưởng stack view có ICS vì đặc điểm này)
+- Tuy nhiên kích thước của nó được tính toán bởi auto layout. Như ví dụ Hello, chiều rộng của stack view phụ thuộc vào width constraint của image view -> Có nghĩa là kích thước của nó không phải là input vào auto layout mà là ouput -> Nó không có ICS.
+- Vậy nên set CHCR priority cho stack view không có tác dụng vì nó không có intrinsic content size.
+
+Nếu chúng ta muốn điều chỉnh fitting size của stack view so với các item nằm ngoài stack view, cần phải tạo constraint rõ ràng hoặc là thay đổi CHCR priority của các item bên trong so với các item nằm bên ngoài stack. Ví dụ dưới đây mình sẽ dùng cách thay đổi CHCR priority của các item bên trong stack view.
+
+Ví dụ: Mở `DemoAutoLayoutGuide.xcodeproj` và tới file `DetailUltimateVC.xib`. 
+- Đặt `usernameLabel`, `starLabel` và `trophyLabel` vào stack view.
+- Neo stack view với top, leading, trailing, bottom. Lúc này Interface Builder sẽ báo lỗi unsatified layout.
+- Giải quyết conflict bằng cách hạ giá trị horizontal content hugging priority của `usernameLabel` bé hơn giá trị của `starLabel` và `trophyLabel`như ở `DemoAutoLayoutGuide.xcodeproj` và tới file `DetailUltimateVC.xib`.
+
+```
+UsernameLabel.HorizontalContentHuggingPriority = 251
+StarLabel.HorizontalContentHuggingPriority = 252
+TrophyLabel.HorizontalContentHuggingPriority = 253
+```
+
+<center>
+	<img src="./Image/img-xibdetailultimatevc.png" height="400">
+</center>
+
+Run project và xem thành quả nào! 🎉
+
+Well well ~ That's it. Hope you guys will support me by clicking the ⭐️. Thank you so muchhhhhh ~ ⭐️
+
+Cám ơn các bạn khi đã đọc đến đây, hi vọng mọi người sẽ support để mình có thêm động lực bằng cách vote ⭐️ nhé. Cảm ơn! ⭐️
+
+### Reference
+
+- [Understanding Auto Layout][Reference 1]
+- [Auto Layout Without Constraints][Reference 2]
+- [Anatomy of a Constraint][Reference 3]
+- [Stack Views][Reference 4]
+- [Views with Intrinsic Content Size][Reference 5]
+
+---
+[Reference 1]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/index.html#//apple_ref/doc/uid/TP40010853-CH7-SW1 "Understanding Auto Layout"
+
+[Reference 2]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/AutoLayoutWithoutConstraints.html#//apple_ref/doc/uid/TP40010853-CH8-SW1 "Auto Layout Without Constraints" 
+
+[Reference 3]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/AnatomyofaConstraint.html#//apple_ref/doc/uid/TP40010853-CH9-SW1 "Anatomy of a Constraint"
+
+[Reference 4]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/LayoutUsingStackViews.html#//apple_ref/doc/uid/TP40010853-CH11-SW1 "Stack Views"
+
+[Reference 5]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/ViewswithIntrinsicContentSize.html#//apple_ref/doc/uid/TP40010853-CH13-SW1 "Views with Intrinsic Content Size"
