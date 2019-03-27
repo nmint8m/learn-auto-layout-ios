@@ -1,8 +1,15 @@
 # Auto Layout Guide
 
-_Written byL **Nguyen Minh Tam**_
+_Written by **Nguyen Minh Tam**_
 
-Trong tài liệu này có đề cập đến một số kiến thức cơ bản của auto layout và một số ứng dụng của trong thực tế thường gặp khi develop một iOS application. Recommend cho các bạn đã làm quen với auto layout trước đó. Let's check it out! 💥
+Trong tài liệu này có đề cập đến một số kiến thức cơ bản của auto layout và một số ứng dụng của trong thực tế thường gặp khi develop một iOS application. Tài liệu này được recommend cho các bạn đã làm quen với auto layout trước đó nhe. Trong thời gian tới, mình sẽ viết tài liệu auto layout in iOS for begginer. Nhưng bây giờ hãy xem thử auto layout sẽ làm được gì trước nhé. Let's check it out! 💥
+
+<center>
+	<img src="./Image/img-app-menu.png" height="200">
+	<img src="./Image/img-app-hello.png" height="200">
+	<img src="./Image/img-app-signin.gif" height="200">
+	<img src="./Image/img-app-detail.gif" height="200">
+</center>
 
 **Menu**
 
@@ -235,3 +242,186 @@ Câu trả lời là đối với trường hợp RedLabel này, layout không h
 <center>
 	<img src="./Image/redlabel.jpg" height="100">
 </center>
+
+### Intrinsic Content Size
+
+Nếu các bạn để ý, tất cả ví dụ layout ở trên đều sử dụng constraint để khai báo đầy đủ size và position cho view. 
+
+Tuy nhiên, đối với một số trường hợp chỉ cần khai báo position là đủ. Vì một số view vốn dĩ đã có natural size, được xác định bởi kích thước của content bên trong. Nó được gọi là `intrinsic content size` (ICS). 
+
+Ví dụ như, một button có `intrinsic content size` bao gồm title cộng với một khoảng margin nhỏ.
+
+Tất nhiên là không phải view nào cũng có ICS. Đối với những view có ICS, thì ICS có thể xác định heigh, width hoặc cả hai cho view đó. 
+
+Sau đây là ví dụ ICS đối với một số controls phổ biến:
+
+| View | Intrinsic content size |
+| --- | --- |
+| UIView and NSView | No intrinsic content size. |
+| Sliders | Defines only the width (iOS). Defines the width, the height, or both—depending on the slider’s type (OS X). |
+| Labels, buttons, switches, and text fields | Defines both the height and the width. |
+| Text views and image views | Intrinsic content size can vary. |
+
+ICS được tính dựa trên nội dung đang chứa hiện tại trong view. 
+
+- ICS của label hay button dựa trên lượng text được show và font được sử dụng. Đối với những view khác, ICS phức tạp hơn nhiều.
+- Ví dụ như đối với một image view rỗng thì nó không có ICS. Chỉ cho tới khi chúng ta thêm image, ICS được set bằng size của image đó.
+- ICS của text view thay đổi dựa theo content, vào việc scrolling có được enable hay không và dựa vào những constraint khác được set lên view nữa:
+	- Ví dụ khi scrolling được enable, text view lúc này không cần có ICS.
+	- Khi scrolling bị disable, ICS của text view được tính bởi size của text, không tính đường bao xung quanh. Trường hợp text rỗng, nó rẽ trả về height và width cho nội dung của một line text.
+	- Nếu chúng ta add constraint cho width thì ICS sẽ định nghĩa height bắt buộc để display đủ text trong khoảng width giới hạn đó.
+
+Các bạn có thể theo dõi ví dụ ở file `ViewVC.swift`, `ImageViewVC.swift` và `TextViewVC.swift` để so sánh ICS của các controls được đề cập phía trên.
+
+Ví dụ: Mở `DemoAutoLayoutGuide.xcodeproj` và tới file `MenuCell.xib`:
+
+```
+ContentLabel.Bottom = ContainerView.Bottom + 10 (priority: 1000)
+ContainerView.Bottom >= ContentView.Bottom + 5 (priority: 1000)
+```
+
+<center>
+	<img src="./Image/img-xibmenucell.png" height="400">
+</center>
+
+Lúc này, chúng ta chỉ mới thấy được chiều cao của container view đang phụ thuộc vào ICS của content label (do đẳng thức thứ 1). Run project, chúng ta sẽ thấy được sự ảnh hưởng ICS của label lên chiều cao của menu cell vì lúc này bất đẳng thức thứ 2 được auto layout đưa vào để tính toán.
+
+Qua ví dụ đơn giản trên, chúng ta đã hiểu được ICS là gì và có tác dụng như thế nào. Ngay tiếp theo, ta sẽ tìm hiểu vì sao ICS lại có tác dụng như thế.
+
+Bởi vì auto layout biểu diễn ICS của view dựa trên một cặp constraint cho mỗi chiều (dimension), trong đó:
+
+- `Content hugging` kéo view vào phía bên trong để nó ôm khít content của nó.
+- `Compression resistance` đẩy view ra phía ngoài để tránh cho nó cắt mất content của nó.
+
+<center>
+	<img src="./Image/img-chcr.png" height="200">
+</center>
+
+Những constraint này được biểu diễn bằng bất đẳng thức như phía bên dưới. Trong đó `IntrinsicHeight` và `IntrinsicWidth` constant biểu diễn chiều cao và rộng của intrinsic content size của view:
+
+```
+// Compression Resistance
+View.height >= 0.0 * NotAnAttribute + IntrinsicHeight
+View.width >= 0.0 * NotAnAttribute + IntrinsicWidth
+ 
+// Content Hugging
+View.height <= 0.0 * NotAnAttribute + IntrinsicHeight
+View.width <= 0.0 * NotAnAttribute + IntrinsicWidth
+```
+
+Mỗi loại constraint trên cũng có priority riêng của nó. Mặc định, view set 250 cho `content hugging` và 750 cho `compression resistance`. Vậy nên là dễ kéo view giãn ra hơn là co view nhỏ lại.
+
+Trong một số trường hợp, nếu được thì chúng ta nên sử dụng ICS của view. Vì nó giúp cho layout linh hoạt hơn, đáp ứng với sự thay đổi khi content của view bị thay đổi, điển hình ở ví dụ Menu. Nó cũng giúp làm giảm đi số lượng constraint mà chúng ta cần tạo ra để tạo ra một layout nonambiguous, nonconflicting. Việc của chúng ta là chỉ phải quản lý `content hugging priotity` và `compression resistance priotity` (CHCR priority). Dưới đây là một số hướng dẫn và ví dụ cho handle ICS:
+
+Ví dụ 1: Mở `DemoAutoLayoutGuide.xcodeproj` và tới file `DetailVC.xib`. Ta có 3 label lần lượt là: `usernameLabel`, `starLabel` và `trophyLabel`. Khi bấm `ultimateButton`, 3 label trên sẽ thay đổi nội dung. Yêu cầu cần đạt được ở đây là làm sao cho nội dung của 3 label này lấp đầy content view, `starLabel` và `trophyLabel` nằm bên phải và hiển thị nội dung đầy đủ trong khi `nameLabel` nằm bên trái và nội dung của nó có thể bị lượt bỏ.
+
+<center>
+	<img src="./Image/img-xibdetailvc.png" height="400">
+</center>
+
+Nếu như layout theo cách bình thường chỉ neo top, leading, trailing, bottom thì sẽ không đúng yêu cầu như ờ phía bên phải:
+
+| Right | Wrong |
+| --- | --- |
+| <img src="./Image/img-app-detail.gif" height="400"> | <img src="./Image/img-app-detail-fail.gif" height="400"> |
+
+Lý do là vì kéo giãn nhiều view để fill đầy một khoảng không gian cố định, nếu tất cả các view đó đều có content-hugging priority bằng nhau, thì layout sẽ ambiguous. Vì AL không biết view nào sẽ bị kéo giãn ra và view nào sẽ thu nhỏ lại.
+
+Để giải quyết vấn đề thì solution dễ nhất là hạ giá trị horizontal compression assistance priority của `usernameLabel` bé hơn giá trị của `starLabel` và `trophyLabel`như ở `DemoAutoLayoutGuide.xcodeproj` và tới file `DetailLevel99VC.xib`.
+
+<center>
+	<img src="./Image/img-xibdetaillevel99vc.png" height="400">
+</center>
+
+Trong đó:
+
+```
+UsernameLabel.HorizontalContentCompressionAssistancePriority = 750
+StarLabel.HorizontalContentCompressionAssistancePriority = 751
+TrophyLabel.HorizontalContentCompressionAssistancePriority = 751
+```
+
+Ví dụ 2: Một số trường hợp không mong muốn đối với một số button hay label, phần background phía sau hay bị kéo giãn ra to so với ICS của nó dẫn tới việc text hiển thị không đúng vị trí. Chúng ta giải quyết trường hợp này bằng cách tăng content-hugging priority của control đó lên.
+
+Ví dụ 3: Baseline constraint chỉ làm việc với những view có **intrinsic content height**. Nếu view đó bị kéo giãn / ép lại theo chiều dọc thì baseline constraint không còn được điều chỉnh đúng nữa.
+
+Ví dụ 4: Đối với một số view, như UISwitch chả hạn, nó nên luôn được hiển thị đúng với ICS. Vậy nên ta cần tăng CHCR priority để tránh việc kéo dãn / ép lại.
+
+Ví dụ 5: Nên tránh việc set CHCR priority = 1000 (required CHCR priority). Vì tốt hơn là để view hiển thị sai kích thước hơn là tạo ra conflict layout. Vậy nên nếu một view cần phải hiển thị đúng với ICS, ta nên set priority cao (như 999 chả hạn). Với cách tiếp cận này, về mặt tổng thể, nó sẽ khiến cho view được kéo giãn / ép lại với giá trị suýt soát nhất có thể.
+
+### Intrinsic Content Size Versus Fitting Size
+
+Intrinsic content size như là input vào auto layout. Khi view có intrinsic content size, hệ thống sẽ sự động generate các constraint thể hiện kích thứơc đó và các constraint lại được dùng để tính toán layout.
+
+Mặt khác, fitting size lại là output từ auto layout. Nó là size được tính toán xuất ra cho view, dựa vào các constraint của view.
+
+Stack view là một ví dụ điển hình. Hệ thống tính toán size của stack view dựa trên nội dung và các attribute được set trong stack view. Stack view hoạt động như nó có intrinsic content size, nhưng thật ra không phải vậy, stack view có fitting size. Chúng ta sẽ tìm hiểu cụ thể trong phần sau.
+
+## Auto Layout With Stack View
+
+*Written by: __Nguyễn Minh Tâm__*
+
+Stack view cung cấp cho chúng ta một công cụ mạnh mẽ của auto layout mà không cần sử dụng đến nhiều constraint phức tạp. Một stack view có thể define một row hoặc column của các UI element. Stack view sắp xếp nhưng element bằng các property sau:
+
+- **axis** (UIStackView only) / **orientation** (NSStackView only): xác định hướng của stack view theo vertical hay horizontal.
+- **distribution**: xác định cách xếp đặt của các view nằm trên trục của stack view.
+- **alignment**: xác định cách xếp đặt của các view nằm thẳng đứng so với trục của stack view.
+- **spacing**: xác định khoảng cách giữa các view nằm cạnh nhau.
+
+Sử dụng stack view trên Interface Builder bằng cách kéo thả vertical hoặc horizontal stack view vào. Sau đó kéo các content thả vào trong stack view.
+
+Nếu một object có ISC, nó sẽ xuất hiện trong stack view với size đó. Nếu object không có intrinsic content size, Interface Builder sẽ set default size. Chúng ta có thể resize object và Interface sẽ add thêm constraint để duy trì size của nó.
+
+Ví dụ: Mở `DemoAutoLayoutGuide.xcodeproj` và tới file `HelloVC.xib`. Về cơ bản thì chỉ cần kéo thả các control vào stack view. Tuy nhiên ở đây mình đã set thêm kích thước cho một số control.
+
+<center>
+	<img src="./Image/img-app-hello.png" height="400">
+</center>
+
+Như đã đề cập ở phía trên, stack view là một ví dụ điển hình cho fitting size. Hệ thống tính toán size của stack view dựa trên nội dung và các attribute được set trong stack view. Stack view hoạt động như nó có intrinsic content size, nhưng thật ra không phải vậy:
+
+- Chúng ta có thể tạo ra layout chỉ sử dụng constraint để định nghĩa position. (chúng ta hay nhầm tưởng stack view có ICS vì đặc điểm này)
+- Tuy nhiên kích thước của nó được tính toán bởi auto layout. Như ví dụ Hello, chiều rộng của stack view phụ thuộc vào width constraint của image view -> Có nghĩa là kích thước của nó không phải là input vào auto layout mà là ouput -> Nó không có ICS.
+- Vậy nên set CHCR priority cho stack view không có tác dụng vì nó không có intrinsic content size.
+
+Nếu chúng ta muốn điều chỉnh fitting size của stack view so với các item nằm ngoài stack view, cần phải tạo constraint rõ ràng hoặc là thay đổi CHCR priority của các item bên trong so với các item nằm bên ngoài stack. Ví dụ dưới đây mình sẽ dùng cách thay đổi CHCR priority của các item bên trong stack view.
+
+Ví dụ: Mở `DemoAutoLayoutGuide.xcodeproj` và tới file `DetailUltimateVC.xib`. 
+- Đặt `usernameLabel`, `starLabel` và `trophyLabel` vào stack view.
+- Neo stack view với top, leading, trailing, bottom. Lúc này Interface Builder sẽ báo lỗi unsatified layout.
+- Giải quyết conflict bằng cách hạ giá trị horizontal content hugging priority của `usernameLabel` bé hơn giá trị của `starLabel` và `trophyLabel`như ở `DemoAutoLayoutGuide.xcodeproj` và tới file `DetailUltimateVC.xib`.
+
+```
+UsernameLabel.HorizontalContentHuggingPriority = 251
+StarLabel.HorizontalContentHuggingPriority = 252
+TrophyLabel.HorizontalContentHuggingPriority = 253
+```
+
+<center>
+	<img src="./Image/img-xibdetailultimatevc.png" height="400">
+</center>
+
+Run project và xem thành quả nào! 🎉
+
+Well well ~ That's it. Hope you guys will support me by clicking the ⭐️. Thank you so muchhhhhh ~ ⭐️
+
+Cám ơn các bạn khi đã đọc đến đây, hi vọng mọi người sẽ support để mình có thêm động lực bằng cách vote ⭐️ nhé. Cảm ơn! ⭐️
+
+### Reference
+
+- [Understanding Auto Layout][Reference 1]
+- [Auto Layout Without Constraints][Reference 2]
+- [Anatomy of a Constraint][Reference 3]
+- [Stack Views][Reference 4]
+- [Views with Intrinsic Content Size][Reference 5]
+
+---
+[Reference 1]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/index.html#//apple_ref/doc/uid/TP40010853-CH7-SW1 "Understanding Auto Layout"
+
+[Reference 2]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/AutoLayoutWithoutConstraints.html#//apple_ref/doc/uid/TP40010853-CH8-SW1 "Auto Layout Without Constraints" 
+
+[Reference 3]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/AnatomyofaConstraint.html#//apple_ref/doc/uid/TP40010853-CH9-SW1 "Anatomy of a Constraint"
+
+[Reference 4]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/LayoutUsingStackViews.html#//apple_ref/doc/uid/TP40010853-CH11-SW1 "Stack Views"
+
+[Reference 5]: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/ViewswithIntrinsicContentSize.html#//apple_ref/doc/uid/TP40010853-CH13-SW1 "Views with Intrinsic Content Size"
